@@ -1,0 +1,94 @@
+﻿@page "/converters/guid"
+@using AntonOvesen.Services.Utilities.Client.Components
+@using AntonOvesen.Services.Utilities.Client.Enums
+@rendermode InteractiveWebAssembly
+
+<PageTitle>Guid Converter</PageTitle>
+
+<main class="position-relative">
+    
+    <article class="position-absolute start-50 top-50 translate-middle w-50 h-100 p-2 m-1">
+        
+        <h1>Converter</h1>
+        <h3>Input text here</h3>
+
+        <figure class="d-inline-flex flex-column w-100 p-2">
+            
+            <select @bind=@ConvertFrom class="font-consolas dropdown w-100">
+                @foreach (var item in Enum.GetValues(typeof(GuidTypes)))
+                {
+                    <option value="@item">@item</option>
+                }
+            </select>
+
+            <TextArea OnValueChanged=@OnValueChange></TextArea>
+
+            @* <textarea class="font-consolas form-control w-100 m-1 p-1" placeholder=@InputPlaceholder @bind=@InputContent></textarea> *@
+
+            <div class="text-center">
+                <button class="btn btn-primary w-50 m-1 p-1" @onclick=@OnConvert>Convert!</button>
+            </div>
+            
+            <textarea class="font-consolas form-control w-100 m-1 p-1">@ConvertedValue</textarea>
+        
+        </figure>
+
+    </article>
+
+</main>
+
+@code {
+    private const string InputPlaceholder = "61750abf-fdae-49c2-93ea-b134d740204a\n4370702b-6a95-4275-b5d6-5dc16e9b97db";
+
+    private GuidTypes ConvertFrom { get; set; } = GuidTypes.UUID;
+
+    private string InputContent { get; set; } = string.Empty;
+
+    private string ConvertedValue { get; set; } = string.Empty;
+
+    private void OnValueChange(string value) => InputContent = value;
+
+    private void OnConvert()
+    {
+        if (string.IsNullOrWhiteSpace(InputContent))
+        {
+            throw new Exception("Please insert values into input field");
+        }
+
+        var lines = InputContent.Split('\n').ToList();
+
+        Func<string, string> ConvertAction = ConvertFrom switch
+        {
+            GuidTypes.UUID => UUIDToBase64,
+            GuidTypes.Base64 => Base64ToUUID,
+            _ => throw new Exception("U did it wrong")
+        };
+
+        var convertedLines = lines.Select(ConvertAction);
+
+        ConvertedValue = string.Join('\n', convertedLines);
+    }
+
+    private string UUIDToBase64(string uuid)
+    {
+        var guid = Guid.Parse(uuid);
+
+        return Convert.ToBase64String(guid.ToByteArray());
+    }
+
+    private string Base64ToUUID(string base64)
+    {
+        Guid guid;
+
+        try
+        {
+            guid = new Guid(Convert.FromBase64String(base64));
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Bad Base64 conversion to GUID", ex);
+        }
+
+        return guid.ToString();
+    }
+}

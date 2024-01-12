@@ -1,0 +1,10 @@
+﻿@* <figure class="dropdown-figure"> *@
+<select class="font-consolas form-select">
+    @Body
+</select>
+@* </figure> *@
+
+@code {
+    [Parameter]
+    public RenderFragment? Body { get; set; }
+}

@@ -1,0 +1,18 @@
+﻿@inject IJSRuntime JSRuntime
+
+<textarea @ref=@textArea class="resize-ta" placeholder=@Placeholder @onchange="OnChanged" />
+
+@code {
+    private ElementReference textArea;
+
+    [Parameter]
+    public string Placeholder { get; set; } = string.Empty;
+
+    [Parameter]
+    public required EventCallback<string> OnValueChanged { get; set; }
+
+    Task OnChanged(ChangeEventArgs args)
+    {
+        return OnValueChanged.InvokeAsync(args.Value as string ?? string.Empty);
+    }
+}

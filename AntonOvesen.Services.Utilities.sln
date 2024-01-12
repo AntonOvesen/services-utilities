@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AntonOvesen.Services.Utilities", "AntonOvesen.Services.Utilities\AntonOvesen.Services.Utilities\AntonOvesen.Services.Utilities.csproj", "{5AD7D0AA-7CFE-47D1-A835-C4FAD251CF1E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AntonOvesen.Services.Utilities.Client", "AntonOvesen.Services.Utilities\AntonOvesen.Services.Utilities.Client\AntonOvesen.Services.Utilities.Client.csproj", "{6F94B44B-1133-45B1-B345-30D1A2F3C742}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5AD7D0AA-7CFE-47D1-A835-C4FAD251CF1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AD7D0AA-7CFE-47D1-A835-C4FAD251CF1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AD7D0AA-7CFE-47D1-A835-C4FAD251CF1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AD7D0AA-7CFE-47D1-A835-C4FAD251CF1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F94B44B-1133-45B1-B345-30D1A2F3C742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F94B44B-1133-45B1-B345-30D1A2F3C742}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F94B44B-1133-45B1-B345-30D1A2F3C742}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F94B44B-1133-45B1-B345-30D1A2F3C742}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {93961B03-376F-4D85-9BB6-0D77D4431214}
+	EndGlobalSection
+EndGlobal
