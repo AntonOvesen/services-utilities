@@ -10,10 +10,11 @@
 services:
   server:
     build:
-      context: .
-      target: final
+      context: ./AntonOvesen.Services.Utilities
+      # target: final
     ports:
       - 8080:80
+      - 8443:443
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
