@@ -1,19 +1,20 @@
 ﻿@page "/converters/guid"
 @using AntonOvesen.Services.Utilities.Client.Components
 @using AntonOvesen.Services.Utilities.Client.Enums
+@using System.Text.RegularExpressions
 @rendermode InteractiveWebAssembly
 
 <PageTitle>Guid Converter</PageTitle>
 
 <main class="position-relative">
-    
+
     <article class="position-absolute start-50 top-50 translate-middle w-50 h-100 p-2 m-1">
-        
+
         <h1>Converter</h1>
         <h3>Input text here</h3>
 
         <figure class="d-inline-flex flex-column w-100 p-2">
-            
+
             <select @bind=@ConvertFrom class="font-consolas dropdown w-100">
                 @foreach (var item in Enum.GetValues(typeof(GuidTypes)))
                 {
@@ -21,22 +22,23 @@
                 }
             </select>
 
-            <TextArea OnValueChanged=@OnValueChange></TextArea>
+            <TextArea OnValueChanged=@OnValueChange Placeholder=@InputPlaceholder></TextArea>
 
             @* <textarea class="font-consolas form-control w-100 m-1 p-1" placeholder=@InputPlaceholder @bind=@InputContent></textarea> *@
 
             <div class="text-center">
                 <button class="btn btn-primary w-50 m-1 p-1" @onclick=@OnConvert>Convert!</button>
             </div>
-            
-            <textarea class="font-consolas form-control w-100 m-1 p-1">@ConvertedValue</textarea>
-        
+
+            <textarea disabled class="font-consolas form-control w-100 m-1 p-1">@ConvertedValue</textarea>
+
         </figure>
 
     </article>
 
 </main>
 
+@inject ILogger<GuidConverter> _logger;
 @code {
     private const string InputPlaceholder = "61750abf-fdae-49c2-93ea-b134d740204a\n4370702b-6a95-4275-b5d6-5dc16e9b97db";
 
@@ -48,6 +50,9 @@
 
     private void OnValueChange(string value) => InputContent = value;
 
+    private static Regex Base64Regex = new Regex("[-A-Za-z0-9+/]*={2}");
+    private static Regex UUIDRegex = new Regex("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
+
     private void OnConvert()
     {
         if (string.IsNullOrWhiteSpace(InputContent))
@@ -55,40 +60,87 @@
             throw new Exception("Please insert values into input field");
         }
 
-        var lines = InputContent.Split('\n').ToList();
-
         Func<string, string> ConvertAction = ConvertFrom switch
         {
+            GuidTypes.Auto => DeterminTypeAndConvert,
             GuidTypes.UUID => UUIDToBase64,
             GuidTypes.Base64 => Base64ToUUID,
-            _ => throw new Exception("U did it wrong")
+            _ => _ => "Please select an input Type."
         };
 
-        var convertedLines = lines.Select(ConvertAction);
+        var input = InputContent;
 
-        ConvertedValue = string.Join('\n', convertedLines);
+        var result = ConvertAction(input);
+
+        ConvertedValue = result;
     }
 
-    private string UUIDToBase64(string uuid)
+    private string DeterminTypeAndConvert(string input)
     {
-        var guid = Guid.Parse(uuid);
+        var uuidMatches = UUIDRegex.Matches(input).Count;
+        var base64Matches = Base64Regex.Matches(input).Count;
 
-        return Convert.ToBase64String(guid.ToByteArray());
+        if(uuidMatches >= base64Matches)
+        {
+            return UUIDToBase64(input);
+        }
+        else
+        {
+            return Base64ToUUID(input);
+        }
     }
 
-    private string Base64ToUUID(string base64)
+    private string UUIDToBase64(string input)
     {
-        Guid guid;
-
-        try
+        return FindAndConvert(input, UUIDRegex, match =>
         {
-            guid = new Guid(Convert.FromBase64String(base64));
-        }
-        catch (Exception ex)
+            try
+            {
+                var guid = Guid.Parse(match);
+                return Convert.ToBase64String(guid.ToByteArray());
+            }
+            catch
+            {
+                return $"[Failed to convert: {match}]";
+            }
+        });
+    }
+
+    private string Base64ToUUID(string input)
+    {
+        return FindAndConvert(input, Base64Regex, match =>
         {
-            throw new Exception("Bad Base64 conversion to GUID", ex);
+            try
+            {
+                var guid = new Guid(Convert.FromBase64String(match));
+                return guid.ToString();
+            }
+            catch
+            {
+                return $"[Failed to convert: {match}]";
+            }
+        });        
+    }
+
+    private static string FindAndConvert(string input, Regex pattern, Func<string, string> converter)
+    {
+        var matches = pattern.Matches(input);
+
+        if (matches.Count == 0)
+        {
+            return "[Found nothing to convert]";
         }
 
-        return guid.ToString();
+        Dictionary<string, string> matchReplacements = matches
+            .Select(x => x.Value)
+            .Distinct()
+            .ToDictionary(match => match, match => converter(match));
+
+        foreach (var replacement in matchReplacements)
+        {
+            input = input.Replace(replacement.Key, replacement.Value);
+        }
+
+        return input;
     }
 }

@@ -2,6 +2,7 @@
 {
     public enum GuidTypes
     {
+        Auto,
         UUID,
         Base64
     }
