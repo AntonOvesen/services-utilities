@@ -1,18 +1,7 @@
-﻿textarea {
-    resize: vertical
-}
-
-.font-consolas {
+﻿.font-consolas {
     font-family: 'Consolas';
 }
 
 @font-face {
     font-family: 'Consolas';
 }
-
-textarea {
-    padding-top: 10px;
-    padding-bottom: 25px; 
-    width: 100%; 
-    display: block;
-}   

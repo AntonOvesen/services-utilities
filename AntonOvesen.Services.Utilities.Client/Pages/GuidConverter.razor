@@ -14,22 +14,16 @@
         <h3>Input text here</h3>
 
         <figure class="d-inline-flex flex-column w-100 p-2">
-            <select @bind=@ConvertFrom class="font-consolas dropdown w-100">
-                @foreach (var item in Enum.GetValues(typeof(GuidTypes)))
-                {
-                    <option value="@item">@item</option>
-                }
-            </select>
+            
+            <DropDown TOption=@GuidTypes Options=@Options OnSelectionChanged=@OnDropdownSelection />
 
             <TextArea OnValueChanged=@OnValueChange Placeholder=@InputPlaceholder></TextArea>
 
-            @* <textarea class="font-consolas form-control w-100 m-1 p-1" placeholder=@InputPlaceholder @bind=@InputContent></textarea> *@
-
             <div class="text-center">
-                <button class="btn btn-primary w-50 m-1 p-1" @onclick=@OnConvert>Convert!</button>
+                <Button Text="Convert!" OnClick=@OnConvert/>
             </div>
 
-            <textarea disabled class="font-consolas form-control w-100 m-1 p-1">@ConvertedValue</textarea>
+            <TextAreaDisplay Text="@ConvertedValue"></TextAreaDisplay>
 
         </figure>
 
@@ -41,7 +35,9 @@
 @code {
     private const string InputPlaceholder = "61750abf-fdae-49c2-93ea-b134d740204a\n4370702b-6a95-4275-b5d6-5dc16e9b97db";
 
-    private GuidTypes ConvertFrom { get; set; } = GuidTypes.Auto;
+    private GuidTypes ConvertFrom { get; set; }
+
+    private List<GuidTypes> Options = Enum.GetValues(typeof(GuidTypes)).Cast<GuidTypes>().ToList();
 
     private string InputContent { get; set; } = string.Empty;
 
@@ -51,6 +47,11 @@
 
     private static Regex Base64Regex = new Regex("[-A-Za-z0-9+/]{22}={2}");
     private static Regex UUIDRegex = new Regex("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
+
+    public void OnDropdownSelection(GuidTypes selection)
+    {
+        ConvertFrom = selection;
+    }
 
     private void OnConvert()
     {
