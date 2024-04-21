@@ -1,0 +1,39 @@
+﻿<figure>
+
+    @if (string.IsNullOrWhiteSpace(_text) == false)
+    {
+        <div class="form-control">
+            @_text
+        </div>
+        <button class="btn btn-primary" @onclick=@OnCopy>Copy</button>
+    }
+
+
+</figure>
+
+<script>
+    window.clipboardCopy = {
+        copyText: function (text) {
+            navigator.clipboard.writeText(text)
+                .then(function () {
+                    alert(`Copied to clipboard!`);
+                })
+                .catch(function (error) {
+                    alert(error);
+                });
+        }
+    };
+</script>
+
+@inject IJSRuntime jsRuntime;
+@code {
+    [Parameter]
+    public string Text { get => _text; set => _text = value; }
+
+    private string _text = "sample text";
+
+    private async Task OnCopy()
+    {
+        await jsRuntime.InvokeVoidAsync("clipboardCopy.copyText", Text);
+    }
+}
