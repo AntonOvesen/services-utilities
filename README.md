@@ -4,7 +4,7 @@
 </div>
 
 ## Get Started
-Get it containerized [here](https://hub.docker.com/r/antonovesen/services-utilities)
+Get it at [Docker Hub](https://hub.docker.com/r/antonovesen/services-utilities)
 
 `docker pull antonovesen/services-utilities`
 
