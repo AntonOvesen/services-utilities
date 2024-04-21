@@ -1,10 +1,9 @@
-﻿@inject IJSRuntime JSRuntime
-
-<textarea @ref=@textArea class="resize-ta" placeholder=@Placeholder @onchange="OnChanged" />
+﻿<div class="grow-wrap">
+    <textarea placeholder=@Placeholder @onchange="OnChanged" class="w-100"
+        onInput="this.parentNode.dataset.replicatedValue = this.value"/>
+</div>
 
 @code {
-    private ElementReference textArea;
-
     [Parameter]
     public string Placeholder { get; set; } = string.Empty;
 
