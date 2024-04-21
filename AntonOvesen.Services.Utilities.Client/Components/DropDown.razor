@@ -1,10 +1,25 @@
-﻿@* <figure class="dropdown-figure"> *@
-<select class="font-consolas form-select">
-    @Body
+﻿@typeparam TOption where TOption : struct;
+
+<select @onchange=@HandleOnChange class="font-consolas dropdown w-100">
+    @foreach (var item in Options)
+    {
+        <option value="@item">@item</option>
+    }
 </select>
-@* </figure> *@
 
 @code {
     [Parameter]
-    public RenderFragment? Body { get; set; }
+    public List<TOption> Options { get; set; } = new List<TOption>();
+
+    [Parameter]
+    public EventCallback<TOption> OnSelectionChanged { get; set; }
+
+    private TOption _selection { get; set; } 
+
+    private async Task HandleOnChange(ChangeEventArgs args)
+    {
+        _selection = Enum.Parse<TOption>(args.Value!.ToString()!);
+
+        await OnSelectionChanged.InvokeAsync(_selection);
+    }
 }
