@@ -1,0 +1,10 @@
+﻿<button class="btn btn-primary w-50 m-1 p-1" @onclick=@OnClick>@Text</button>
+
+@code {
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+}
