@@ -1,0 +1,70 @@
+name: Publish Application to Docker
+
+on: 
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs: 
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore
+    
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+
+  publish:
+    runs-on: ubuntu-latest
+    
+    needs: [build]
+    if: always() && !cancelled() && (needs.build.result == 'success' || needs.build.result == 'skipped')
+    
+    permissions:
+      contents: read
+      packages: write
+      # This is used to complete the identity challenge
+      # with sigstore/fulcio when running outside of PRs.
+      id-token: write
+    
+    steps:
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      
+      - name: Docker Build and release
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ${{ vars.IMAGE_NAME }}:latest
+            ${{ vars.IMAGE_NAME }}:dev
+
+      - name: Docker Build and prerelease
+        if: github.event_name == 'pull_request'
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ${{ vars.IMAGE_NAME }}:dev
