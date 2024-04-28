@@ -66,4 +66,3 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:dev
-            ${{ env.IMAGE_NAME }}:$(date +%s)
