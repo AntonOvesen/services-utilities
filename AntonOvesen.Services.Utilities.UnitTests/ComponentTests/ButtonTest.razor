@@ -1,0 +1,22 @@
+@using AntonOvesen.Services.Utilities.Client.Components
+@using AntonOvesen.Services.Utilities.Tests.ComponentTests.Setup
+
+@attribute [TestFixture]
+@inherits TestBase
+@code {
+
+    [Test]
+    public void Text_IsCustom_ButtonDisplaysCustomText()
+    {
+        // Arrange
+        var customText = "Click me!";
+
+        var button = Render(@<Button Text="@customText" />);
+
+        // Act & Assert
+        var result = button.Find("button").TextContent;
+        
+        result.Should().Be(customText);
+    }
+
+}
